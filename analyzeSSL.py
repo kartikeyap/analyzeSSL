@@ -1,8 +1,15 @@
 import requests
 import json
 import time
+import argparse
+import getopt
 
 path = "https://api.ssllabs.com/api/v2/analyze"
+
+parser = argparse.ArgumentParser(description='Mass scan of domain for TLS related issues', add_help=True, epilog='Quick script to scan multiple domains with SSL Labs API')
+parser.add_argument('-i','--input', help='input filewith domains. One domain per line', required=True)
+parser.add_argument('-o','--output', help='Output csv file', required=True)
+argsdict = vars(parser.parse_args())
 
 c = open('accepted_ciphers.txt', 'r')
 accepted_ciphers = c.readlines()
@@ -10,8 +17,9 @@ ios_ciphers = []
 for i in accepted_ciphers:
 	foo = i.strip('\n')
 	ios_ciphers.append(foo)
-
-f = open('endpoints.txt', 'r')
+input = argsdict['input']
+output = argsdict['output']
+f = open(input, 'r')
 endpoints = f.readlines()
 
 def testBit(int_type, offset):
@@ -128,7 +136,7 @@ for ep in endpoints:
 					row =  host + ',' + common_name + ',' + key_algo + ',' + str(key_strength) + ',' + sign_algo + ',' + cert_chain + ',' + revoc + ',' + ocsp_revoc + ',' + poodleTls + ',' + unsupported_cipher + ',' + SSLV2 + ',' + SSLV3 + ',' + TLS10 + ',' + TLS11 + ',' + TLS12 + '\n'
 					print '\n'
 					print '====== 009 ======'
-					with open("output_again.txt", "a") as myfile:
+					with open(output, "a") as myfile:
 						myfile.write(row)
 					myfile.close()
 				except Exception,e:
