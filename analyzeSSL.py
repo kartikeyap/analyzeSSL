@@ -64,24 +64,14 @@ for ep in endpoints:
 					for protocol in result['endpoints'][0]['details']['protocols']:
 						if "SSL" in protocol['name'] and protocol['version']=="2.0":
 							SSLV2 = 'SSL V2 enabled'
-						else:
-							SSLV2 = 'SSL V2 disabled'
-						if "SSL" in protocol['name'] and protocol['version']=="3.0":
+						elif "SSL" in protocol['name'] and protocol['version']=="3.0":
 							SSLV3 = 'SSL V3 enabled'
-						else:
-							SSLV3 = 'SSL V3 disabled'
-						if "TLS" in protocol['name'] and protocol['version']=="1.2":
+						elif "TLS" in protocol['name'] and protocol['version']=="1.2":
 							TLS12 = 'TLS 1.2 enabled'
-						else:
-							TLS12 = 'TLS 1.2 disabled'
-						if "TLS" in protocol['name'] and protocol['version']=="1.1":
+						elif "TLS" in protocol['name'] and protocol['version']=="1.1":
 							TLS11 = 'TLS 1.1 enabled'
-						else:
-							TLS11 = 'TLS 1.1 disabled'
-						if "TLS" in protocol['name'] and protocol['version']=="1.0":
+						elif "TLS" in protocol['name'] and protocol['version']=="1.0":
 							TLS10 = 'TLS 1.0 enabled'
-						else:
-							TLS10 = 'TLS 1.0 disabled'
 					print '====== 005 ======'
 					certmsg = int(result['endpoints'][0]['details']['cert']['issues'])
 					ntbef = testBit(certmsg, 1)
