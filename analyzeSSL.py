@@ -8,7 +8,7 @@ path = "https://api.ssllabs.com/api/v2/analyze"
 
 parser = argparse.ArgumentParser(description='Mass scan of domain for TLS related issues', add_help=True, epilog='Quick script to scan multiple domains with SSL Labs API')
 parser.add_argument('-i','--input', help='input filewith domains. One domain per line', required=True)
-parser.add_argument('-s', '--size', help='size of domains to scan in one batch, default 7', default=7, required=True)
+parser.add_argument('-s', '--size', help='size of domains to scan in one batch, default 7', default=7)
 parser.add_argument('-o','--output', help='Output csv file', required=True)
 argsdict = vars(parser.parse_args())
 
@@ -32,8 +32,15 @@ def testBit(int_type, offset):
 	return(int_type & mask)
 
 for endpoints in y:
-	print endpoints
-	time.sleep(120)
+	payload = {}
+	try:
+		response = requests.get('https://api.ssllabs.com/api/v2/info', params=payload)
+		info =  response.json()
+		assessment_balance =  int(info['maxAssessments']) - int(info['currentAssessments']) 
+		if assessment_balance < size :
+			time.sleep(120)
+	except requests.exceptions.RequestException as e:
+		print str(e)
 	for ep in endpoints:
 		host = ep.rstrip()
 		print host
@@ -63,7 +70,7 @@ for endpoints in y:
 								#print accepted_ciphers
 							for cipher in ios_ciphers:
 								if (cipher in configured_ciphers):
-									supported_cipher = unsupported_cipher + cipher + ','
+									supported_cipher = supported_cipher + cipher + ','
 							supported_cipher = supported_cipher + '"'
 						else:
 							supported_cipher = 'Error enumerating configured ciphers or no IOS9 compliant ciphers'
