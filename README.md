@@ -9,5 +9,5 @@ Currently this script takes input from a file endpoints.txt, which needs to be p
 To do:
 
 1. Have better error handling
-2. Remove hardcoded filenames to allow for arguments.
+2. ~~Remove hardcoded filenames to allow for arguments.~~
 3. Proper CSV output
