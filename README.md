@@ -5,6 +5,7 @@ Quick script to check SSL configuration of a list of domains using SSL labs api.
 
 Currently this script takes input from a file endpoints.txt, which needs to be present in the same directory as analyzeSSL.py along with accepted_ciphers.txt. The result of this script are a little unstable based on SSLLabs api's performance. 
 
+Check SSLlabs API documentation for more details: https://github.com/ssllabs/ssllabs-scan/blob/master/ssllabs-api-docs.md
 
 To do:
 
