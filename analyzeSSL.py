@@ -8,7 +8,7 @@ path = "https://api.ssllabs.com/api/v2/analyze"
 
 parser = argparse.ArgumentParser(description='Mass scan of domain for TLS related issues', add_help=True, epilog='Quick script to scan multiple domains with SSL Labs API')
 parser.add_argument('-i','--input', help='input filewith domains. One domain per line', required=True)
-parser.add_argument('-s', '--size', help='size of domains to scan in one batch, default 7', default=7, type=int, required=True)
+parser.add_argument('-s', '--size', help='size of domains to scan in one batch, default 7', default=7, required=True)
 parser.add_argument('-o','--output', help='Output csv file', required=True)
 argsdict = vars(parser.parse_args())
 
@@ -18,17 +18,22 @@ ios_ciphers = []
 for i in accepted_ciphers:
 	foo = i.strip('\n')
 	ios_ciphers.append(foo)
-input = argsdict['input']
+
+in_file = argsdict['input']
 output = argsdict['output']
-f = open(input, 'r')
+size = int(argsdict['size'])
+
+f = open(in_file, 'r')
 x  = f.readlines()
-endpoints = zip(*[iter(x)*size])
+y = zip(*[iter(x)]*size)
+
 def testBit(int_type, offset):
 	mask = 1 << offset
 	return(int_type & mask)
 
-for endpoints in x:
-	sleep(120)
+for endpoints in y:
+	print endpoints
+	time.sleep(120)
 	for ep in endpoints:
 		host = ep.rstrip()
 		print host
@@ -61,7 +66,7 @@ for endpoints in x:
 									supported_cipher = unsupported_cipher + cipher + ','
 							supported_cipher = supported_cipher + '"'
 						else:
-							supported_cipher = 'Error enumerating configured ciphers'
+							supported_cipher = 'Error enumerating configured ciphers or no IOS9 compliant ciphers'
 						print '====== 003 ======'
 						poodlevar = result['endpoints'][0]['details']['poodleTls']
 						if poodlevar == 2:
