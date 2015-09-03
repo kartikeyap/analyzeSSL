@@ -3,6 +3,7 @@ import json
 import time
 import argparse
 import getopt
+import csv
 
 path = "https://api.ssllabs.com/api/v2/analyze"
 
@@ -27,11 +28,17 @@ f = open(in_file, 'r')
 x  = f.readlines()
 y = zip(*[iter(x)]*size)
 
+with open(output, 'wb') as output_file:
+	csv_writer = csv.writer(output_file ,delimiter = ',', quotechar='"')
+	csv_writer.writerow(('host', 'cn', 'key algo', 'key strength', 'signing algo', 'cert chain', 'revoc', 'ocsp revoc', 'poodleTls', 'supported ATS ciphers', 'SSLV2', 'SSLV3', 'TLS10', 'TLS11', 'TLS12'))
+	output_file.close()
+
 def testBit(int_type, offset):
 	mask = 1 << offset
 	return(int_type & mask)
 
 for endpoints in y:
+	print endpoints
 	payload = {}
 	try:
 		response = requests.get('https://api.ssllabs.com/api/v2/info', params=payload)
@@ -148,11 +155,15 @@ for endpoints in y:
 						key_algo = result['endpoints'][0]['details']['key']['alg']
 						key_strength = int(result['endpoints'][0]['details']['key']['size'])
 						sign_algo = result['endpoints'][0]['details']['cert']['sigAlg']
-						row =  host + ',' + common_name + ',' + key_algo + ',' + str(key_strength) + ',' + sign_algo + ',' + cert_chain + ',' + revoc + ',' + ocsp_revoc + ',' + poodleTls + ',' + supported_cipher + ',' + SSLV2 + ',' + SSLV3 + ',' + TLS10 + ',' + TLS11 + ',' + TLS12 + '\n'
+						row = []
+						#row =  host + ',' + common_name + ',' + key_algo + ',' + str(key_strength) + ',' + sign_algo + ',' + cert_chain + ',' + revoc + ',' + ocsp_revoc + ',' + poodleTls + ',' + supported_cipher + ',' + SSLV2 + ',' + SSLV3 + ',' + TLS10 + ',' + TLS11 + ',' + TLS12 + '\n'
+						row =  host , common_name , key_algo , str(key_strength) , sign_algo , cert_chain , revoc , ocsp_revoc , poodleTls , supported_cipher , SSLV2 , SSLV3 , TLS10 , TLS11 , TLS12
 						print '\n'
 						print '====== 009 ======'
 						with open(output, "a") as myfile:
-							myfile.write(row)
+							csv_writer = csv.writer(myfile ,delimiter = ',', quotechar='"')
+							csv_writer.writerow(row)
+							#myfile.write(row)
 						myfile.close()
 					except Exception,e:
 						raise
